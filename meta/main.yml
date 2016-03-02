@@ -1,4 +1,2 @@
 ---
-dependencies:
-  - { role: nginx, vhosts: [{ src: "{{playbook_dir}}/roles/platform-api/templates/nginx-platform-api.j2", dest: 'platform-api' }] }
-  - { role: php }
+
