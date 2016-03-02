@@ -1,0 +1,9 @@
+---
+platform_api_base_path: /var/www/platform-api
+deploy_user: deploy
+# platform_api_hostname
+# platform_cdn_baseurl
+# platform_cdn_container
+# platform_api_db_name
+# platform_api_db_user
+# platform_api_db_pass

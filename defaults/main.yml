@@ -1,0 +1,6 @@
+---
+platform_api_version: develop
+platform_api_repo_url: "https://github.com/ushahidi/platform.git"
+
+# platform_cdn_baseurl
+# platform_cdn_container

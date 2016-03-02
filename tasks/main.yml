@@ -1,0 +1,25 @@
+---
+  - name: deploy platform code from github
+    git: repo={{ platform_api_repo_url }} dest={{ platform_api_base_path }} version={{ platform_api_version | default("master") }} force=yes
+    become: yes
+    become_user: "{{ deploy_user }}"
+
+  - name: install dependencies using composer
+    composer: command=install working_dir={{ platform_api_base_path }}
+    become: yes
+    become_user: "{{ deploy_user }}"
+
+  - name: change permissions on application/cache to 0777
+    file: path={{ platform_api_base_path }}/application/cache mode=0777
+    become: yes
+    become_user: "{{ deploy_user }}"
+
+  - name: change permissions on application/logs to 0777
+    file: path={{ platform_api_base_path }}/application/logs mode=0777
+    become: yes
+    become_user: "{{ deploy_user }}"
+
+  - name: change permissions on application/media/uploads to 0777
+    file: path={{ platform_api_base_path }}/application/media/uploads mode=0777
+    become: yes
+    become_user: "{{ deploy_user }}"
