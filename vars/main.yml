@@ -1,5 +1,5 @@
 ---
-platform_api_base_path: /var/www/platform-api
+platform_api_base_path: /var/www/platform
 deploy_user: deploy
 # platform_api_hostname
 # platform_cdn_baseurl
