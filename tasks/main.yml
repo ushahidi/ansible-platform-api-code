@@ -1,11 +1,32 @@
 ---
   - name: deploy platform code from github
-    git: repo={{ platform_api_repo_url }} dest={{ platform_api_base_path }} version={{ platform_api_version | default("master") }} force=yes
+    git: repo={{ platform_api_repo_url }} dest={{ platform_api_base_path }} version={{ platform_api_version | default("master") }} force={{ platform_api_update }} update={{ platform_api_update }}
     become: yes
     become_user: "{{ deploy_user }}"
 
   - name: install dependencies using composer
     composer: command=install working_dir={{ platform_api_base_path }}
+    become: yes
+    become_user: "{{ deploy_user }}"
+
+  - name: copy .env file to server
+    template: src="templates/platform-dot-env.j2" dest={{ platform_api_base_path }}/.env
+    become: yes
+    become_user: "{{ deploy_user }}"
+
+  - name: copy cdn config to server
+    template: src="templates/platform-config-cdn.j2" dest={{ platform_api_base_path }}/application/config/cdn.php
+    become: yes
+    become_user: "{{ deploy_user }}"
+    when: platform_cdn
+
+  - name: copy media config to server
+    template: src="templates/platform-config-media.j2" dest={{ platform_api_base_path }}/application/config/media.php
+    become: yes
+    become_user: "{{ deploy_user }}"
+
+  - name: copy ratelimiter config to server
+    template: src="templates/platform-config-ratelimiter.j2" dest={{ platform_api_base_path }}/application/config/ratelimiter.php
     become: yes
     become_user: "{{ deploy_user }}"
 
