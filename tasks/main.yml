@@ -3,6 +3,7 @@
     git: repo={{ platform_api_repo_url }} dest={{ platform_api_base_path }} version={{ platform_api_version | default("master") }} force={{ platform_api_update }} update={{ platform_api_update }}
     become: yes
     become_user: "{{ deploy_user }}"
+    notify: run platform api migrations
 
   - name: install dependencies using composer
     composer: command=install working_dir={{ platform_api_base_path }}
