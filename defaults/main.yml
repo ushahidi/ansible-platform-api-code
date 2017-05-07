@@ -3,11 +3,23 @@ deploy_user: deploy
 platform_api_base_path: /var/www/platform
 platform_api_version: develop
 platform_api_repo_url: "https://github.com/ushahidi/platform.git"
-platform_api_update: yes # Update the code or just make sure its there?
 platform_api_ratelimiter: 'memcached'
+
+platform_api_update: yes # Update the code or just make sure its there?
+
+## These are required
+# platform_api_db_host:
+# platform_api_db_name:
+# platform_api_db_user:
+# platform_api_db_pass:
+
+## Other (optional) runtime settings
 platform_cdn: false
 # platform_cdn_type
 # platform_cdn_baseurl
 # platform_cdn_container
 platform_api_raven_url: ""
 platform_api_kohana_env: "production"
+# platform_client_intercom_appid:
+# platform_api_multisite_domain:
+# platform_api_multisite_client_domain:

@@ -3,9 +3,15 @@ DB_HOST={{ platform_api_db_host }}
 DB_NAME={{ platform_api_db_name }}
 DB_USER={{ platform_api_db_user }}
 DB_PASS={{ platform_api_db_pass }}
+{% if platform_client_intercom_appid is defined %}
 INTERCOM_APP_ID={{ platform_client_intercom_appid }}
-MULTISITE_DOMAIN={{ platform_api_multisite_domain }}
-MULTISITE_CLIENT_DOMAIN={{ platform_api_multisite_client_domain }}
+{% endif %}
+{% if platform_api_multisite_domain is defined %}
+MULTISITE_DOMAIN={{ platform_api_multisite_domain }}\
 MULTISITE_EMAIL=support@ushahidi.com
+{% endif %}
+{% if platform_api_multisite_client_domain is defined %}
+MULTISITE_CLIENT_DOMAIN={{ platform_api_multisite_client_domain  }}
+{% endif %}
 RAVEN_URL={{ platform_api_raven_url }}
 KOHANA_ENV={{ platform_api_kohana_env }}

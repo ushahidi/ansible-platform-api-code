@@ -1,47 +1,99 @@
 ---
+- include: deployer-user.yml
+  when: deploy_user != 'root'
+
+- block:
+  - name: ensure dependencies are installed
+    apt: name={{ item }} state=present
+    with_items:
+      - git
+      - curl
+
+  - name: install composer
+    shell: curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+    args:
+      creates: /usr/local/bin/composer
+
+  - name: set composer github token
+    shell: "composer config -g github-oauth.github.com {{ github_token }}"
+    when: github_token|default("") != ""
+
+  become: yes
+  become_user: root
+
+- block:
   - name: deploy platform code from github
     git: repo={{ platform_api_repo_url }} dest={{ platform_api_base_path }} version={{ platform_api_version | default("master") }} force={{ platform_api_update }} update={{ platform_api_update }}
-    become: yes
-    become_user: "{{ deploy_user }}"
     notify: run platform api migrations
 
   - name: install dependencies using composer
     composer: command=install working_dir={{ platform_api_base_path }}
-    become: yes
-    become_user: "{{ deploy_user }}"
 
   - name: copy .env file to server
     template: src="templates/platform-dot-env.j2" dest={{ platform_api_base_path }}/.env mode=0644
-    become: yes
-    become_user: "{{ deploy_user }}"
 
   - name: copy cdn config to server
     template: src="templates/platform-config-cdn.j2" dest={{ platform_api_base_path }}/application/config/cdn.php mode=0644
-    become: yes
-    become_user: "{{ deploy_user }}"
     when: platform_cdn
 
   - name: copy media config to server
     template: src="templates/platform-config-media.j2" dest={{ platform_api_base_path }}/application/config/media.php mode=0644
-    become: yes
-    become_user: "{{ deploy_user }}"
 
   - name: copy ratelimiter config to server
     template: src="templates/platform-config-ratelimiter.j2" dest={{ platform_api_base_path }}/application/config/ratelimiter.php mode=0644
-    become: yes
-    become_user: "{{ deploy_user }}"
 
-  - name: change permissions on application/cache to 0777
-    file: path={{ platform_api_base_path }}/application/cache mode=0777
-    become: yes
-    become_user: "{{ deploy_user }}"
+  - name: change permissions on cache, log and uploads to 0777
+    file: path={{ platform_api_base_path }}/application/{{item}} mode=0777 recurse=yes
+    with_items:
+      - cache
+      - logs
+      - media/uploads
 
-  - name: change permissions on application/logs to 0777
-    file: path={{ platform_api_base_path }}/application/logs mode=0777
-    become: yes
-    become_user: "{{ deploy_user }}"
+  # - name: Run phinx migration for deployment
+  #   shell: "bin/phinx migrate -c application/phinx.php"
+  #   args:
+  #     chdir: "{{ platform_api_base_path }}"
 
-  - name: change permissions on application/media/uploads to 0777
-    file: path={{ platform_api_base_path }}/application/media/uploads mode=0777
-    become: yes
-    become_user: "{{ deploy_user }}"
+  become: yes
+  become_user: "{{ deploy_user }}"
+
+# - block:
+#   - name: Set mailto on crontab
+#     cronvar:
+#       name: "MAILTO"
+#       value: "{{ platform_api_cron_email }}"
+#       user: "{{ deploy_user }}"
+
+#   - name: Add cron jobs for platform api
+#     cron:
+#       name: "Ushahidi Platform {{ item }}"
+#       user: "{{ deploy_user }}"
+#       job: "cd {{ platform_api_base_path }} && {{ platform_api_base_path }}/bin/ushahidi {{ item }} >> /dev/null"
+#       minute: "*/5"
+#     with_items:
+#       - "dataprovider outgoing"
+#       - "dataprovider incoming"
+#       - "savedsearch"
+#       - "notification queue"
+#   become: yes
+#   become_user: root
+
+# TODO: Automate initial config
+# - name: Create admin user
+#   shell: "./bin/ushahidi user create --email \"{{ EMAIL }}\" --role admin --password \"{{ PASSWORD }}\" --realname \"{{ DISPLAY_NAME }}\""
+#   register: admin_user
+#   when: EMAIL is defined and EMAIL != None and EMAIL != ""
+#   args:
+#     chdir: "{{ base_path }}"
+
+# - name: Delete default admin user
+#   shell: "./bin/ushahidi user delete --email \"admin\""
+#   when: EMAIL is defined and EMAIL != None and EMAIL != ""
+#   args:
+#     chdir: "{{ base_path }}"
+
+# - name: Set site name
+#   shell: "./bin/ushahidi config:set site --key name \"{{ DEPLOYMENT_NAME }}\" "
+#   when: DEPLOYMENT_NAME is defined and DEPLOYMENT_NAME != None and DEPLOYMENT_NAME != ""
+#   args:
+#     chdir: "{{ base_path }}"

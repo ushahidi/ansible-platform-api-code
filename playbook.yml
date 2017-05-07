@@ -1,0 +1,13 @@
+---
+- hosts: all
+  roles:
+    - role: ushahidi.php
+      php_minor_version: "5.6"
+    - role: ansible-platform-api-code
+      platform_api_db_host: mysql
+      platform_api_db_name: mysql
+      platform_api_db_user: root
+      platform_api_db_pass: ""
+  handlers:
+    - name: run platform api migrations
+      debug: msg="Dummy handler actually"
