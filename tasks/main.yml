@@ -18,6 +18,12 @@
     shell: "composer config -g github-oauth.github.com {{ github_token }}"
     when: github_token|default("") != ""
 
+  - name: give deployer user access to ssh agent
+    shell: |
+      setfacl -m u:{{ deploy_user }}:rw $SSH_AUTH_SOCK ;
+      setfacl -m u:{{ deploy_user }}:x $(dirname $SSH_AUTH_SOCK)
+    when: lookup('env', 'SSH_AUTH_SOCK') != ""
+
   become: yes
   become_user: root
 
