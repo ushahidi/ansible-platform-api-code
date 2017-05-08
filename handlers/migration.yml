@@ -1,0 +1,10 @@
+- name: Run phinx migration for deployment
+  command: "bin/phinx migrate -c application/phinx.php"
+  args:
+    chdir: "{{ platform_api_base_path }}"
+  when: not platform_api_multisite_setup and platform_api_run_migrations
+
+- name: Notify some other part of the playbook that hopefully handles migrations
+  debug: msg="Raising 'run multisite platform api migrations'"
+  notify: run multisite platform api migrations
+  when: platform_api_multisite_setup

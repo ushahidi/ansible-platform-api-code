@@ -1,0 +1,3 @@
+---
+- name: run platform api migrations
+  include: ../handlers/migration.yml
