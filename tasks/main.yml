@@ -1,87 +1,13 @@
 ---
 - include: deployer-user.yml
   when: deploy_user != 'root'
+  tags: server-provision
 
-- block:
-  - name: ensure dependencies are installed
-    apt: name={{ item }} state=present
-    with_items:
-      - git
-      - curl
+- include: deploy-dependencies.yml
+  tags: server-provision
 
-  - name: install composer
-    shell: curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-    args:
-      creates: /usr/local/bin/composer
-    tags: [ skip_ansible_lint ]
-
-  - name: set composer github token
-    command: "composer config -g github-oauth.github.com {{ github_token }}"
-    when: github_token|default("") != ""
-
-  - name: give deployer user access to ssh agent
-    shell: |
-      setfacl -m u:{{ deploy_user }}:rw $SSH_AUTH_SOCK ;
-      setfacl -m u:{{ deploy_user }}:x $(dirname $SSH_AUTH_SOCK)
-    when: lookup('env', 'SSH_AUTH_SOCK') != ""
-
-  become: yes
-  become_user: root
-
-- block:
-  - name: deploy platform code from github
-    git: repo={{ platform_api_repo_url }} dest={{ platform_api_base_path }} version={{ platform_api_version | default("master") }} force={{ platform_api_update }} update={{ platform_api_update }}
-    register: st_git_pull
-    notify: run platform api migrations
-
-  - name: install dependencies using composer
-    composer: command=install working_dir={{ platform_api_base_path }}
-
-  - name: copy .env file to server
-    template: src="templates/platform-dot-env.j2" dest={{ platform_api_base_path }}/.env mode=0644
-
-  - name: copy cdn config to server
-    template: src="templates/platform-config-cdn.j2" dest={{ platform_api_base_path }}/application/config/cdn.php mode=0644
-    when: platform_cdn
-
-  - name: copy media config to server
-    template: src="templates/platform-config-media.j2" dest={{ platform_api_base_path }}/application/config/media.php mode=0644
-
-  - name: copy ratelimiter config to server
-    template: src="templates/platform-config-ratelimiter.j2" dest={{ platform_api_base_path }}/application/config/ratelimiter.php mode=0644
-
-  - name: change permissions on cache, log and uploads to 0777
-    file: path={{ platform_api_base_path }}/application/{{item}} mode=0777 recurse=yes
-    with_items:
-      - cache
-      - logs
-      - media/uploads
-
-  become: yes
-  become_user: "{{ deploy_user }}"
-
-- block:
-  - name: Set mailto on crontab
-    cronvar:
-      name: "MAILTO"
-      value: "{{ platform_api_cron_email }}"
-      user: "{{ deploy_user }}"
-
-  - name: Add cron jobs for platform api
-    cron:
-      name: "Ushahidi Platform {{ item }}"
-      user: "{{ deploy_user }}"
-      job: "cd {{ platform_api_base_path }} && {{ platform_api_base_path }}/bin/ushahidi {{ item }} >> /dev/null"
-      minute: "*/5"
-    with_items:
-      - "dataprovider outgoing"
-      - "dataprovider incoming"
-      - "savedsearch"
-      - "notification queue"
-
-  when: not platform_api_multisite_setup and platform_api_cronjobs
-  become: yes
-  become_user: root
+- include: code-deploy.yml
+  tags: code-deploy
 
 # TODO: Automate initial config
 # - name: Create admin user
