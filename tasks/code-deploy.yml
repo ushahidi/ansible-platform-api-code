@@ -47,15 +47,11 @@
 
   - name: Add cron jobs for platform api
     cron:
-      name: "Ushahidi Platform {{ item }}"
+      name: "Ushahidi Platform {{ item.command }}"
       user: "{{ deploy_user }}"
-      job: "cd {{ platform_api_base_path }} && {{ platform_api_base_path }}/bin/ushahidi {{ item }} >> /dev/null"
-      minute: "*/5"
-    with_items:
-      - "dataprovider outgoing"
-      - "dataprovider incoming"
-      - "savedsearch"
-      - "notification queue"
+      job: "cd {{ platform_api_base_path }} && {{ platform_api_base_path }}/bin/ushahidi {{ item.command }} >> /dev/null"
+      minute: "{{ item.minutes }}"
+    with_items: "{{ platform_api_ushahidi_cli_cronjobs | union(platform_api_additional_ushahidi_cli_cronjobs) }}"
 
   when: not platform_api_multisite_setup and platform_api_cronjobs
   become: yes
