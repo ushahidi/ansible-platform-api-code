@@ -8,6 +8,8 @@
       platform_api_db_name: mysql
       platform_api_db_user: root
       platform_api_db_pass: ""
+      platform_api_multisite_setup: false
+      platform_api_additional_ushahidi_cli_cronjobs: [ { command: "webhook send", minutes: "10" } ]
   handlers:
     - name: run platform api migrations
       debug: msg="Dummy handler actually"

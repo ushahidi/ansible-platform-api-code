@@ -1,6 +1,3 @@
 - src: git+ssh://git@github.com/ushahidi/ansible-php.git
   version: master
   name: ushahidi.php
-- src: git+ssh://git@github.com/ushahidi/ansible-nginx.git
-  version: v2
-  name: ushahidi.nginx

@@ -1,0 +1,21 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: ansible-lint
+platforms:
+  - name: ansible-platform-api-code
+    image: ansible-common:trusty
+    command: sleep infinity
+    dockerfile: Dockerfile
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      roles_path: "roles:../../../../"
+scenario:
+  name: default
+verifier:
+  name: testinfra
