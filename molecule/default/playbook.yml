@@ -1,15 +1,36 @@
 ---
-- hosts: all
+- name: Converge
+  hosts: all
   roles:
     - role: ushahidi.php
       php_minor_version: "5.6"
+
+- name: Converge (with template)
+  hosts: instance_1
+  roles:
     - role: ansible-platform-api-code
+      platform_api_version: dotenv-deploy
       platform_api_db_host: mysql
       platform_api_db_name: mysql
       platform_api_db_user: root
       platform_api_db_pass: ""
       platform_api_multisite_setup: false
       platform_api_additional_ushahidi_cli_cronjobs: [ { command: "webhook send", minutes: "10" } ]
+  handlers:
+    - name: run platform api migrations
+      debug: msg="Dummy handler actually"
+
+- name: Converge (with env dictionary)
+  hosts: instance_2
+  roles:
+    - role: ansible-platform-api-code
+      platform_api_version: dotenv-deploy
+      platform_api_env:
+        DB_HOST: mysql
+        DB_NAME: mysql
+        DB_USER: root
+        DB_PASS: root
+        KOHANA_ENV: production
   handlers:
     - name: run platform api migrations
       debug: msg="Dummy handler actually"

@@ -15,8 +15,21 @@
   - name: install dependencies using composer
     composer: command=install working_dir={{ platform_api_base_path }}
 
-  - name: copy .env file to server
+  - name: create .env file in the server (method 1 - from project's .env.deploy file)
+    include_role: 
+      name: ansible-dotenv-generator
+    vars:
+      dest: "{{ platform_api_base_path }}/.env"
+      dotenv_sample: "{{ platform_api_base_path }}/{{ platform_api_dotenv_sample }}"
+      env: "{{ platform_api_env }}"
+      dest_owner: "{{ deploy_user }}"
+    args:
+      allow_duplicates: True
+    when: platform_api_env is defined
+
+  - name: copy .env file to server (method 2 - playbook template file)
     template: src="templates/platform-dot-env.j2" dest={{ platform_api_base_path }}/.env mode=0644
+    when: platform_api_env is not defined
 
   - name: copy cdn config to server
     template: src="templates/platform-config-cdn.j2" dest={{ platform_api_base_path }}/application/config/cdn.php mode=0644

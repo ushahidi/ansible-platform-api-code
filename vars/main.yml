@@ -18,3 +18,5 @@ platform_api_ushahidi_cli_cronjobs:
   - { command: "dataprovider incoming", minutes: "*/5" }
   - { command: "savedsearch", minutes: "*/5" }
   - { command: "notification queue", minutes: "*/5" }
+
+platform_api_dotenv_sample: .env.deploy

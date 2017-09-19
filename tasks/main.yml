@@ -1,4 +1,7 @@
 ---
+- set_fact:
+    platform_api_code_unlock_dep_roles: true   # shame on me for such ugly trick
+
 - include: deployer-user.yml
   when: deploy_user != 'root'
   tags: server-provision

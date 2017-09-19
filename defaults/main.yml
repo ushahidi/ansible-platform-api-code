@@ -24,6 +24,9 @@ platform_api_additional_ushahidi_cli_cronjobs: [
 # platform_api_db_user:
 # platform_api_db_pass:
 
+## ... unless we are configuring the .env generically with this fact
+# platform_api_env:
+
 ## Other (optional) runtime settings
 platform_cdn: false
 # platform_cdn_type
