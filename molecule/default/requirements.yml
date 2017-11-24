@@ -1,3 +1,4 @@
+---
 - src: git+ssh://git@github.com/ushahidi/ansible-php.git
   version: master
   name: ushahidi.php

@@ -6,10 +6,10 @@
       php_minor_version: "5.6"
 
 - name: Converge (with template)
-  hosts: instance_1
+  hosts: ansible_platform_api_code_1
   roles:
     - role: ansible-platform-api-code
-      platform_api_version: dotenv-deploy
+      platform_api_version: develop
       platform_api_db_host: mysql
       platform_api_db_name: mysql
       platform_api_db_user: root
@@ -21,16 +21,17 @@
       debug: msg="Dummy handler actually"
 
 - name: Converge (with env dictionary)
-  hosts: instance_2
+  hosts: ansible_platform_api_code_2
   roles:
     - role: ansible-platform-api-code
-      platform_api_version: dotenv-deploy
+      platform_api_version: develop
       platform_api_env:
         DB_HOST: mysql
         DB_NAME: mysql
         DB_USER: root
         DB_PASS: root
         KOHANA_ENV: production
+        CLIENT_URL: https://deployment.ushahidi.io
   handlers:
     - name: run platform api migrations
       debug: msg="Dummy handler actually"

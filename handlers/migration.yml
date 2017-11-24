@@ -1,3 +1,4 @@
+---
 - name: Run phinx migration for deployment
   command: "bin/phinx migrate -c application/phinx.php"
   args:

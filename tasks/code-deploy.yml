@@ -1,3 +1,4 @@
+---
 - block:
   - name: give deployer user access to ssh agent
     shell: |
@@ -5,6 +6,7 @@
         setfacl -m u:{{ deploy_user }}:rw $SSH_AUTH_SOCK ;
         setfacl -m u:{{ deploy_user }}:x $(dirname $SSH_AUTH_SOCK)
       fi
+    become: true
     become_user: root
 
   - name: deploy platform code from github
@@ -16,7 +18,7 @@
     composer: command=install working_dir={{ platform_api_base_path }}
 
   - name: create .env file in the server (method 1 - from project's .env.deploy file)
-    include_role: 
+    include_role:
       name: ansible-dotenv-generator
     vars:
       dest: "{{ platform_api_base_path }}/.env"

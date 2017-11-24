@@ -12,4 +12,4 @@ galaxy_info:
 dependencies:
 - src: git+https://github.com/ushahidi/ansible-dotenv-generator.git
   name: ansible-dotenv-generator
-  when: "{{ platform_api_code_unlock_dep_roles | default(False) }}"    # shame on me for such ugly trick
+  when: "platform_api_code_unlock_dep_roles | default(False)"    # shame on me for such ugly trick
