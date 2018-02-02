@@ -15,22 +15,6 @@
     become: yes
     become_user: "{{ deploy_user }}"
 
-  - name: copy cdn config to server
-    template: src="templates/platform-config-cdn.j2" dest={{ platform_api_base_path }}/application/config/cdn.php mode=0644
-    become: yes
-    become_user: "{{ deploy_user }}"
-    when: platform_cdn
-
-  - name: copy media config to server
-    template: src="templates/platform-config-media.j2" dest={{ platform_api_base_path }}/application/config/media.php mode=0644
-    become: yes
-    become_user: "{{ deploy_user }}"
-
-  - name: copy ratelimiter config to server
-    template: src="templates/platform-config-ratelimiter.j2" dest={{ platform_api_base_path }}/application/config/ratelimiter.php mode=0644
-    become: yes
-    become_user: "{{ deploy_user }}"
-
   - name: change permissions on application/cache to 0777
     file: path={{ platform_api_base_path }}/application/cache mode=0777
     become: yes
