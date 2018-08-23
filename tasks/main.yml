@@ -9,6 +9,9 @@
     composer: command=install working_dir={{ platform_api_base_path }}
     become: yes
     become_user: "{{ deploy_user }}"
+    
+  - name: create optimized autoload
+    composer: command=dump-autoload working_dir={{ platform_api_base_path }} optimize_autoloader=yes
 
   - name: copy .env file to server
     template: src="templates/platform-dot-env.j2" dest={{ platform_api_base_path }}/.env mode=0644
